@@ -30,7 +30,6 @@
     }
     body{
         background-color: #1c77ac;
-        min-width: 1000px;
     }
     #apps-true{
         font-family: Helvetica; 
@@ -63,6 +62,23 @@
         float: left;
         margin: 0;
     }
+    .main_text{
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 5px;
+        font-size: 10vh;
+        width: 33%; /* Set the width of the div */
+        margin: 0 auto; /* Center the div horizontally */
+        text-align: center; /* Center the div vertically */
+    }
+    .text_on_task{
+      color:#1fd655;
+    }
+    #alert{
+      font-size: 50%;
+    }
+    .text_not_on_task{
+      color:#d61f1f;
+    }
 
 </style>
 <body>
@@ -71,14 +87,18 @@
   
    
 
-    <h2>Apps Used</h2>
+    <div class = "current_apps">
+      <h2>Current apps</h2>
 
-    <ul id = "apps">
-        <li>Minecraft</li>
-        <li>Valorant</li>
-    </ul>
+      <ul id = "apps">
+      </ul></div>
     
-    <text id="OnTask">ON TASK</text>
+    <div class = "main_text">
+      <text id="onTask" class = "text_on_task">ON TASK</text>
+      <h3 id = "time" class = "text_on_task"></h3>
+      <h3 id = "alert" class = "text_not_on_task"></h3>
+      <button onclick="clickButton()">take a break</button>
+    </div>
 
     <div class = "right">
       <text>work for >20 minutes and get a 5 minute break</text>
