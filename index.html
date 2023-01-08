@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>App Usage Monitor</title>
   <script>
-    var interval = 60; //in seconds
+    var interval = 20; //in seconds
     var timeCounter = 0;
     var breakCounter = 0;
     var hasGame = false;
@@ -30,7 +30,7 @@
         text-align: center;
     }
     body{
-        background-color: #1c77ac;
+        background-color: #1c40ac;
         min-width: 1000px;
         min-height: 500px;
     }
@@ -80,10 +80,11 @@
     }
 
     .main_text{
+      text-align: center;
         position: absolute; 
         top: 50%; left: 50%; 
         transform: translate(-50%, -50%); 
-        font-size: 150px; 
+        font-size: 100px; 
         margin: 0;
     }
     .text_on_task{
@@ -191,9 +192,11 @@
             <li>30 minutes break</li>
             <li>45 minutes break</li>
           </ul>
-          <button onclick="test()" id="Button">testing (adds 5 minutes)</button>
-          <button onclick="test2()" id="Button">reset break time</button>
+          
         </div>
+        <p>testing buttons</p>
+        <button onclick="test()" id="Button">add 5</button>
+          <button onclick="test2()" id="Button">reset break</button>
 
     </div>
   
@@ -252,9 +255,7 @@
       }
     }
     function requestActiveApps() {
-      if (!onBreak) {
-        ipcRenderer.send('check-background-apps');
-      }
+      ipcRenderer.send('check-background-apps');
     }
 
     ipcRenderer.on('app-list', (event, response) => {
@@ -277,7 +278,9 @@
 
 
     ipcRenderer.on('current-stats', (event, game) => {
-      hasGame = game;
+      if (!onBreak) {
+        hasGame = game;
+      }
     });
 
 
