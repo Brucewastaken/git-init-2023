@@ -131,9 +131,9 @@
         document.getElementById('onTask').className = "text_on_task";
         document.getElementById('time').className = "text_on_task";
         document.getElementById('alert').className = "text_on_task";
-      } else if (timeCounter >= 30) {
+      } else if (timeCounter >= 1200) {
         timeCounter = 0;
-        breakCounter = 30;
+        breakCounter = 300;
         onBreak = true;
         var timeElement = document.getElementById('time');
         timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
