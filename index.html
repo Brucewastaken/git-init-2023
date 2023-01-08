@@ -5,13 +5,15 @@
   <title>App Usage Monitor</title>
   <script>
     var interval = 60; //in seconds
-    var timeCounter = 0;
-    var maxTime = 600;
+    var timeCounter = 30;
+    var maxTime = 30;
+    var hasGame = false;
+    var running = true;
   </script>
 </head>
 <body>
   <h1>App Usage Monitor</h1>
-
+  <h2 id = "time"></h2>
   <ul id = "apps">
     <li>hi</li>
   </ul>
@@ -22,7 +24,9 @@
     const { ipcRenderer } = require('electron');
 
     function requestActiveApps() {
-      ipcRenderer.send('check-background-apps', interval, timeCounter, maxTime);
+      if (running) {
+        ipcRenderer.send('check-background-apps', interval, timeCounter, maxTime);
+      }
     }
 
     ipcRenderer.on('app-list', (event, response) => {
@@ -37,16 +41,26 @@
       apps.innerHTML = "";
     });
 
-    ipcRenderer.on('time-out', (event) => {
-      
-    });
 
-    ipcRenderer.on('current-stats', (event, time) => {
-      timeCounter = time;
+    ipcRenderer.on('current-stats', (event, game) => {
+      hasGame = game;
     });
 
 
-
+    setInterval(() => {
+      if (hasGame) {
+        timeCounter -= 1;
+        console.log(1);
+        if (timeCounter == 0) {
+          timeCounter = maxTime;
+          hasGame = false;
+          ipcRenderer.send('time-out');
+          running = false;
+        } 
+      }
+      var timeElement = document.getElementById('time');
+      timeElement.innerHTML = timeCounter;
+    }, 1000);
     
     requestActiveApps();
     setInterval(() => {

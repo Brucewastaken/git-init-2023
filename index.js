@@ -70,10 +70,9 @@ ipcMain.on('check-background-apps', (event, interval, timeCounter, maxTime) => {
         stream.push(stdout);
         stream.push(null);
 
-        var hasGame = false;
-        
         // Pipe the stream into the parser
         event.sender.send('clear-list');
+        event.sender.send('current-stats', false);
         stream.pipe(parser).on('data', (data) => {
             // Get the process name and window title
             const name = data['Image Name'];
@@ -91,6 +90,7 @@ ipcMain.on('check-background-apps', (event, interval, timeCounter, maxTime) => {
             gameArray.forEach(keyword => {
                 if (title.toLowerCase().includes(keyword.toLowerCase())) {
                     hasGame = true;
+                    event.sender.send('current-stats', true);
                     allowed = false;
                 }
             })
@@ -106,17 +106,13 @@ ipcMain.on('check-background-apps', (event, interval, timeCounter, maxTime) => {
             }
             
         });
-        event.sender.send('current-stats', timeCounter);
-        if (hasGame) {
-            timeCounter = timeCounter + interval;
-            if (timeCounter > maxTime) {
-                event.sender.send('time-out');
-                mainWindow.focus();
-                mainWindow.show();
-            }
-        }
+        
         console.log("scanned");
 
     });
 });
 
+ipcMain.on('time-out', (event) => {
+    mainWindow.focus();
+    mainWindow.show();
+});
