@@ -7,37 +7,37 @@ const { arrayBuffer } = require('stream/consumers');
 const { app, BrowserWindow, ipcMain } = electron;
 
 
-var hiddenArray;
-var strictSystemArray;
-var gameArray;
+var hiddenArray = ["window", "OleMainThreadWndName", "search", "start", "notification", "wacom"];
+var strictSystemArray = ["SystemSettings.exe", "smartscreen.exe", "svchost.exe", "taskhostw.exe", "tabtip.exe", "startmenuexperiencehost.exe", "runtimebroker.exe", "searchapp.exe", "ShellExperienceHost.exe", "dllhost.exe", "TextInputHost.exe", "RtkAudUService64.exe", "WavesSvc64.exe", "ModuleCoreService.exe", "taskhostw.exe", "igfxEM.exe", "electron.exe", "ApplicationFrameHost.exe", "CalculatorApp.exe" ];
+var gameArray = ["minecraft","valorant", "riot", "lunarclient", "war thunder", "fortnite", "genshin", "roblox", "gta", "counter-strike", "overwatch"];
 
 
-fs.readFile('hiddenArray.json', (error, data) => {
-    if (error) {
-        console.error(error);
-    } else {
-        hiddenArray = JSON.parse(data);
-        console.log(hiddenArray); 
-    }
-});
+// fs.readFile('hiddenArray.json', (error, data) => {
+//     if (error) {
+//         console.error(error);
+//     } else {
+//         hiddenArray = JSON.parse(data);
+//         console.log(hiddenArray); 
+//     }
+// });
 
-fs.readFile('strictSystemArray.json', (error, data) => {
-    if (error) {
-        console.error(error);
-    } else {
-        strictSystemArray = JSON.parse(data);
-        console.log(strictSystemArray); 
-    }
-});
+// fs.readFile('strictSystemArray.json', (error, data) => {
+//     if (error) {
+//         console.error(error);
+//     } else { 
+//         strictSystemArray = JSON.parse(data);
+//         console.log(strictSystemArray); 
+//     }
+// });
 
-fs.readFile('gameArray.json', (error, data) => {
-    if (error) {
-        console.error(error);
-    } else {
-        gameArray = JSON.parse(data);
-        console.log(gameArray); 
-    }
-});
+// fs.readFile('gameArray.json', (error, data) => {
+//     if (error) {
+//         console.error(error);
+//     } else {
+//         gameArray = JSON.parse(data);
+//         console.log(gameArray); 
+//     }
+// });
 
 let mainWindow;
 
@@ -52,6 +52,7 @@ app.on('ready', () => {
   });
 
   mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.maximize();
 });
 
 ipcMain.on('check-background-apps', (event) => {

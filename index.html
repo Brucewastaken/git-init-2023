@@ -186,6 +186,8 @@
             <li>30 minutes break</li>
             <li>45 minutes break</li>
           </ul>
+          <button onclick="test()" id="Button">testing (adds 5 minutes)</button>
+          <button onclick="test2()" id="Button">reset break time</button>
         </div>
 
     </div>
@@ -195,41 +197,53 @@
 
     const { ipcRenderer } = require('electron');
 
+    function test() {
+      timeCounter += 300;
+    }
+
+    function test2() {
+      breakCounter = 1;
+    }
     function clickButton() {
-      if (timeCounter >= 3600) {
-        timeCounter = 0;
-        breakCounter = 1800;
-        onBreak = true;
-        var timeElement = document.getElementById('time');
-        timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
-        document.getElementById('onTask').innerHTML = "BREAK";
-        document.getElementById('onTask').className = "text_on_task";
-        document.getElementById('time').className = "text_on_task";
-        document.getElementById('alert').className = "text_on_task";
-      } else if (timeCounter >= 2700) {
-        timeCounter = 0;
-        breakCounter = 600;
-        onBreak = true;
-        var timeElement = document.getElementById('time');
-        timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
-        document.getElementById('onTask').innerHTML = "BREAK";
-        document.getElementById('onTask').className = "text_on_task";
-        document.getElementById('time').className = "text_on_task";
-        document.getElementById('alert').className = "text_on_task";
-      } else if (timeCounter >= 1200) {
-        timeCounter = 0;
-        breakCounter = 300;
-        onBreak = true;
-        var timeElement = document.getElementById('time');
-        timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
-        document.getElementById('onTask').innerHTML = "BREAK";
-        document.getElementById('onTask').className = "text_on_task";
-        document.getElementById('time').className = "text_on_task";
-        document.getElementById('alert').className = "text_on_task";
-      } else if (onBreak) {
+      if (onBreak) {
         alert("you're already on break!");
       } else {
-        alert("you have to work for 20 minutes for a break!");
+        if (timeCounter < 1200) {
+          alert("you have to work for 20 minutes for a break!");
+        } else {
+          if (timeCounter >= 7200) {
+            timeCounter = 0;
+            breakCounter = 2700;
+            onBreak = true;
+          } else if (timeCounter >= 5400) {
+            timeCounter = 0;
+            breakCounter = 1800;
+            onBreak = true;
+          } else if (timeCounter >= 3600) {
+            timeCounter = 0;
+            breakCounter = 1200;
+            onBreak = true;
+          } else if (timeCounter >= 2700) {
+            timeCounter = 0;
+            breakCounter = 900;
+            onBreak = true;
+          } else if (timeCounter >= 1800) {
+            timeCounter = 0;
+            breakCounter = 600;
+            onBreak = true;
+          } else if (timeCounter >= 1200) {
+            timeCounter = 0;
+            breakCounter = 300;
+            onBreak = true;
+          }
+        }
+
+        var timeElement = document.getElementById('time');
+          timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
+          document.getElementById('onTask').innerHTML = "BREAK";
+          document.getElementById('onTask').className = "text_on_task";
+          document.getElementById('time').className = "text_on_task";
+          document.getElementById('alert').className = "text_on_task";
       }
     }
     function requestActiveApps() {
@@ -239,6 +253,7 @@
     }
 
     ipcRenderer.on('app-list', (event, response) => {
+      console.log(response)
       var apps = document.getElementById('apps');
       var item = document.createElement('li');
       if (response[3]) {
@@ -246,7 +261,7 @@
       } else {
         item.id = "apps-false";
       }
-      item.textContent = "\t" + response[1] + "\t";
+      item.textContent = "\t" + response[1] + "\n";
       apps.appendChild(item);
     });
 
