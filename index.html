@@ -13,8 +13,8 @@
 </head>
 <style>
     h1{
-      font-family: Helvetica;  
-      font-size: 10vh;
+        font-family: Helvetica;  
+      font-size: 100px;
       color: white;
       text-align: center;
       outline:invert;
@@ -23,13 +23,16 @@
       background-color: #1dbab4;
     }
     h2{
-      font-family: Helvetica; 
-        color: blue;  
-        margin: 10;
+        font-size:36px;
+        color: white; 
+        background-color: #fc5226;
+        margin: 0;
         text-align: center;
     }
     body{
         background-color: #1c77ac;
+        min-width: 1000px;
+        min-height: 500px;
     }
     #apps-true{
         font-family: Helvetica; 
@@ -48,7 +51,7 @@
     }
 
     #time{
-      font-size: 40%;
+      font-size: 36px;
     }
 
     .right{
@@ -57,18 +60,31 @@
         float: right;
     }
     .current_apps{
-        font-size: 100%;
-        width: 33%;
         float: left;
-        margin: 0;
+        width: 25%;
+        padding: 10px;
+        height: 300px;
+        margin-top: 15px;
     }
+
+    #apps{
+      font-size: 36px;
+      padding: 5px;
+      margin: 0;
+    }
+
+    ul{
+      list-style: none;
+      list-style-type: none;
+      padding-left: 0;
+    }
+
     .main_text{
-        font-family: Arial, Helvetica, sans-serif;
-        padding: 20px;
-        font-size: 15vh;
-        width: 33%; /* Set the width of the div */
-        margin: 0 auto; /* Center the div horizontally */
-        text-align: center; /* Center the div vertically */
+        position: absolute; 
+        top: 50%; left: 50%; 
+        transform: translate(-50%, -50%); 
+        font-size: 150px; 
+        margin: 0;
     }
     .text_on_task{
       color:#1fd655;
@@ -79,7 +95,59 @@
     .text_not_on_task{
       color:#d61f1f;
     }
+    .settings{
+        float: right;
+        width: 25%;
+        padding: 10px;
+        height: 350px;
+        background-color: white;
+        outline: auto;
+        outline-color: aquamarine;
+        margin-top: 15px;
+        text-align:center;
+    }
+    #Button {
+      width: 150px; 
+      height: 30px; 
+      font-size: 20px;       
+    }
 
+    .workInfo{
+      font-size: 20px;
+    }
+    #workTable {
+      float: left;
+      width: 50%;
+    }
+
+    #breakTable {
+      float: right;
+      width: 50%;
+    }
+
+    @media (max-width: 1500px) and (min-width: 1200px) {
+        h2 {font-size: 30px}
+        .main_text {font-size: 125px;}
+        #apps {font-size: 34px;}
+        .settings {font-size: 24px;}
+    }
+
+    @media (max-width: 1200px) {
+        h2 {font-size: 26px}
+        .main_text {font-size: 84px;}
+        #apps {font-size: 32px;}
+        .settings {font-size: 22px;}
+    }
+
+    @media (max-width: 1000px) {
+        .main_text {
+            font-size: 76px;
+            position: absolute;
+            top: 425px;
+            left: 525px;
+        }
+        h1 {font-size: 80px}
+    }
 </style>
 <body>
   <h1>App Usage Monitor</h1>
@@ -91,23 +159,43 @@
       <h2>Current apps</h2>
 
       <ul id = "apps">
+          <li>Minecraft</li>
+          <li>Valorant</li>
       </ul></div>
     
     <div class = "main_text">
       <text id="onTask" class = "text_on_task">ON TASK</text>
-      <h3 id = "time" class = "text_on_task">0:00 of working</h3>
       <h3 id = "alert" class = "text_not_on_task"></h3>
-      <button onclick="clickButton()">take a break</button>
     </div>
 
-    <div class = "right">
-      <text>work for >20 minutes and get a 5 minute break</text>
-      <text>work for >45 minutes and get a 10 minute break</text>
-      <text>work for >60 minutes and get a 30 minute break</text>
+    <div class = "settings">
+        <h3 id = "time" class = "text_on_task">0:00 of working</h3>
+        <button onclick="clickButton()" id="Button">Take a Break</button>
+        <br><br>
+        <div class="workInfo">
+          <ul id="workTable">
+            <li>20 minutes work</li>
+            <li>30 minutes work</li>
+            <li>45 minutes work</li>
+            <li>1 hour of work</li>
+            <li>1.5 hours of work</li>
+            <li>2 hours of work</li>
+          </ul>
+          <ul id="breakTable">
+            <li>5 minutes break</li>
+            <li>10 minutes break</li>
+            <li>15 minutes break</li>
+            <li>20 minutes break</li>
+            <li>30 minutes break</li>
+            <li>45 minutes break</li>
+          </ul>
+        </div>
+
     </div>
   
 
   <script>
+
     const { ipcRenderer } = require('electron');
 
     function clickButton() {
