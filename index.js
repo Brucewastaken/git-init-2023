@@ -16,7 +16,7 @@ fs.readFile('hiddenArray.json', (error, data) => {
     if (error) {
         console.error(error);
     } else {
-        systemArray = JSON.parse(data);
+        hiddenArray = JSON.parse(data);
         console.log(hiddenArray); 
     }
 });
