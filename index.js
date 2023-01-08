@@ -7,7 +7,7 @@ const { arrayBuffer } = require('stream/consumers');
 const { app, BrowserWindow, ipcMain } = electron;
 
 
-var hiddenArray = ["window", "OleMainThreadWndName", "search", "start", "notification", "wacom"];
+var hiddenArray = ["window", "OleMainThreadWndName", "search", "start", "notification", "wacom", "App Usage Monitor"];
 var strictSystemArray = ["SystemSettings.exe", "smartscreen.exe", "svchost.exe", "taskhostw.exe", "tabtip.exe", "startmenuexperiencehost.exe", "runtimebroker.exe", "searchapp.exe", "ShellExperienceHost.exe", "dllhost.exe", "TextInputHost.exe", "RtkAudUService64.exe", "WavesSvc64.exe", "ModuleCoreService.exe", "taskhostw.exe", "igfxEM.exe", "electron.exe", "ApplicationFrameHost.exe", "CalculatorApp.exe" ];
 var gameArray = ["minecraft","valorant", "riot", "lunarclient", "war thunder", "fortnite", "genshin", "roblox", "gta", "counter-strike", "overwatch"];
 
