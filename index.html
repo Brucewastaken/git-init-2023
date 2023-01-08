@@ -113,16 +113,41 @@
     function clickButton() {
       if (timeCounter >= 3600) {
         breakCounter = 1800;
+        onBreak = true;
+        var timeElement = document.getElementById('time');
+        timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
+        document.getElementById('onTask').innerHTML = "BREAK";
+        document.getElementById('onTask').className = "text_on_task";
+        document.getElementById('time').className = "text_on_task";
+        document.getElementById('alert').className = "text_on_task";
       } else if (timeCounter >= 2700) {
         breakCounter = 600;
-      } else if (timeCounter >= 1200) {
-        breakCounter = 300;
+        onBreak = true;
+        var timeElement = document.getElementById('time');
+        timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
+        document.getElementById('onTask').innerHTML = "BREAK";
+        document.getElementById('onTask').className = "text_on_task";
+        document.getElementById('time').className = "text_on_task";
+        document.getElementById('alert').className = "text_on_task";
+      } else if (timeCounter >= 30) {
+        breakCounter = 30;
+        onBreak = true;
+        var timeElement = document.getElementById('time');
+        timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
+        document.getElementById('onTask').innerHTML = "BREAK";
+        document.getElementById('onTask').className = "text_on_task";
+        document.getElementById('time').className = "text_on_task";
+        document.getElementById('alert').className = "text_on_task";
+      } else if (onBreak) {
+        alert("you're already on break!");
       } else {
-        document.getElementById('alert').innerHTML = "you have to work for 20 minutes for a break!";
+        alert("you have to work for 20 minutes for a break!");
       }
     }
     function requestActiveApps() {
-      ipcRenderer.send('check-background-apps');
+      if (!onBreak) {
+        ipcRenderer.send('check-background-apps');
+      }
     }
 
     ipcRenderer.on('app-list', (event, response) => {
@@ -169,8 +194,13 @@
         timeElement.innerHTML = secondsToMinutesAndSeconds(timeCounter) + " of working";
       } else {
         breakCounter -= 1;
-        timeElement.innerHTML = secondsToMinutesAndSeconds(timeCounter) + " of break";
+        var timeElement = document.getElementById('time');
+        timeElement.innerHTML = secondsToMinutesAndSeconds(breakCounter) + " of break";
         document.getElementById('onTask').innerHTML = "BREAK";
+        if (breakCounter <= 0) {
+          timeCounter = 0;
+          onBreak = false;
+        }
       }
     }, 1000);
     
