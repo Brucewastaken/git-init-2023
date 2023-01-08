@@ -59,6 +59,7 @@
 </style>
 <body>
   <h1>App Usage Monitor</h1>
+
   <h2 id = "time"></h2>
    
 
@@ -122,13 +123,20 @@
         } 
       }
       var timeElement = document.getElementById('time');
-      timeElement.innerHTML = timeCounter;
+      timeElement.innerHTML = secondsToMinutesAndSeconds(timeCounter) + "remaining";
     }, 1000);
     
     requestActiveApps();
     setInterval(() => {
       requestActiveApps();
     }, interval*1000);
+
+
+    function secondsToMinutesAndSeconds(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
   </script>
 </body>
 </html>
