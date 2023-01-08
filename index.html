@@ -23,22 +23,15 @@
       background-color: #1dbab4;
     }
     h2{
-        color: blue; 
-        font-size: 48px; 
-        outline: auto;
-        outline-color: aquamarine;
-        width: 250px;
-        margin: 10;
+        color: white; 
+        background-color: #fc5226;
+        margin: 0;
+        text-align: center;
     }
     body{
         background-color: #1c77ac;
     }
-    #apps{
-        list-style-type: none;
-        color: #1fd655;
-        font-size: 40px;
-        margin: 0;
-    }
+   
     #OnTask{
         position: absolute; 
         top: 50%; left: 50%; 
@@ -50,26 +43,60 @@
     .settings{
         font-size: 48px;
         float: right;
+        width: 25%;
+        padding: 10px;
+        height: 300px;
         background-color: white;
         outline: auto;
         outline-color: aquamarine;
+        margin-top: 15px;
+    }
+    ul{
+        list-style: none;
+        padding: 5px;
+        padding-left: 0;
+        list-style-type: none;
+        font-size: 40px;
         margin: 0;
     }
 
+    .appUsage {
+        float: left;
+        width: 12.5%;
+        padding: 10px;
+        height: 300px;
+        margin-top: 15px;
+    }
+
+    .timeUsage{
+        float: left;
+        width: 12.5%;
+        padding: 10px;
+        height: 300px;
+        margin-top: 15px;
+    }
 </style>
 <body>
   <h1>App Usage Monitor</h1>
 
   <h2 id = "time"></h2>
    
+    <div class = "appUsage">
+        <h2>Apps Used</h2>
+        <ul id = "apps">
+            <li>Minecraft</li>
+            <li>Valorant</li>
+        </ul>
+    </div>
 
-    <h2>Apps Used</h2>
+    <div class = "timeUsage">
+        <h2>Time Spent</h2>
+        <ul id="time spent">
+            <li>20 minutes</li>
+            <li>10 minutes</li>
+        </ul>
+    </div>
 
-    <ul id = "apps">
-        <li>Minecraft</li>
-        <li>Valorant</li>
-    </ul>
-    
     <text id="OnTask">ON TASK</text>
 
     <div class="settings">
