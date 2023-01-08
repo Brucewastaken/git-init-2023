@@ -11,14 +11,77 @@
     var running = true;
   </script>
 </head>
+<style>
+    h1{
+      font-family: Helvetica;  
+      font-size: 100px;
+      color: white;
+      text-align: center;
+      outline:invert;
+      outline-color: #9e363a;
+      margin: 0;
+      background-color: #1dbab4;
+    }
+    h2{
+        color: blue; 
+        font-size: 48px; 
+        outline: auto;
+        outline-color: aquamarine;
+        width: 250px;
+        margin: 10;
+    }
+    body{
+        background-color: #1c77ac;
+    }
+    #apps{
+        list-style-type: none;
+        color: #1fd655;
+        font-size: 40px;
+        margin: 0;
+    }
+    #OnTask{
+        position: absolute; 
+        top: 50%; left: 50%; 
+        transform: translate(-50%, -50%); 
+        font-size: 100px; 
+        color: #1fd655;
+        margin: 0;
+    }
+    .settings{
+        font-size: 48px;
+        float: right;
+        background-color: white;
+        outline: auto;
+        outline-color: aquamarine;
+        margin: 0;
+    }
+
+</style>
 <body>
   <h1>App Usage Monitor</h1>
   <h2 id = "time"></h2>
-  <ul id = "apps">
-    <li>hi</li>
-  </ul>
+   
 
+    <h2>Apps Used</h2>
 
+    <ul id = "apps">
+        <li>Minecraft</li>
+        <li>Valorant</li>
+    </ul>
+    
+    <text id="OnTask">ON TASK</text>
+
+    <div class="settings">
+        <label for="work_times">Choose a work time:</label>
+            <select>
+                <option value=10>10 minutes</option>
+                <option value=15>15 minutes</option>
+                <option value=20>20 minutes</option>
+                <option value=30>30 minutes</option>
+                <option value=45>45 minutes</option>
+                <option value=60>1 hour</option>
+            </select>
+    </div>
 
   <script>
     const { ipcRenderer } = require('electron');
