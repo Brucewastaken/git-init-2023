@@ -5,16 +5,16 @@
   <title>App Usage Monitor</title>
   <script>
     var interval = 60; //in seconds
-    var timeCounter = 30;
-    var maxTime = 30;
+    var timeCounter = 0;
+    var breakCounter = 0;
     var hasGame = false;
-    var running = true;
+    var onBreak = false;
   </script>
 </head>
 <style>
     h1{
       font-family: Helvetica;  
-      font-size: 100px;
+      font-size: 10vh;
       color: white;
       text-align: center;
       outline:invert;
@@ -23,80 +23,117 @@
       background-color: #1dbab4;
     }
     h2{
-        color: blue; 
-        font-size: 48px; 
-        outline: auto;
-        outline-color: aquamarine;
-        width: 250px;
+      font-family: Helvetica; 
+        color: blue;  
         margin: 10;
+        text-align: center;
     }
     body{
         background-color: #1c77ac;
     }
-    #apps{
+    #apps-true{
+        font-family: Helvetica; 
         list-style-type: none;
         color: #1fd655;
-        font-size: 40px;
+        font-size: 100%;
         margin: 0;
     }
-    #OnTask{
-        position: absolute; 
-        top: 50%; left: 50%; 
-        transform: translate(-50%, -50%); 
-        font-size: 100px; 
-        color: #1fd655;
+
+    #apps-false{
+        font-family: Helvetica; 
+        list-style-type: none;
+        color: #d61f1f;
+        font-size: 100%;
         margin: 0;
     }
-    .settings{
-        font-size: 48px;
+
+    #time{
+      font-size: 30%;
+    }
+
+    .right{
+        font-size: 30%;
+        width: 33%;
         float: right;
-        background-color: white;
-        outline: auto;
-        outline-color: aquamarine;
+    }
+    .current_apps{
+        font-size: 100%;
+        width: 33%;
+        float: left;
         margin: 0;
+    }
+    .main_text{
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 5px;
+        font-size: 10vh;
+        width: 33%; /* Set the width of the div */
+        margin: 0 auto; /* Center the div horizontally */
+        text-align: center; /* Center the div vertically */
+    }
+    .text_on_task{
+      color:#1fd655;
+    }
+    #alert{
+      font-size: 50%;
+    }
+    .text_not_on_task{
+      color:#d61f1f;
     }
 
 </style>
 <body>
   <h1>App Usage Monitor</h1>
 
-  <h2 id = "time"></h2>
+  
    
 
-    <h2>Apps Used</h2>
+    <div class = "current_apps">
+      <h2>Current apps</h2>
 
-    <ul id = "apps">
-        <li>Minecraft</li>
-        <li>Valorant</li>
-    </ul>
+      <ul id = "apps">
+      </ul></div>
     
-    <text id="OnTask">ON TASK</text>
-
-    <div class="settings">
-        <label for="work_times">Choose a work time:</label>
-            <select>
-                <option value=10>10 minutes</option>
-                <option value=15>15 minutes</option>
-                <option value=20>20 minutes</option>
-                <option value=30>30 minutes</option>
-                <option value=45>45 minutes</option>
-                <option value=60>1 hour</option>
-            </select>
+    <div class = "main_text">
+      <text id="onTask" class = "text_on_task">ON TASK</text>
+      <h3 id = "time" class = "text_on_task"></h3>
+      <h3 id = "alert" class = "text_not_on_task"></h3>
+      <button onclick="clickButton()">take a break</button>
     </div>
+
+    <div class = "right">
+      <text>work for >20 minutes and get a 5 minute break</text>
+      <text>work for >45 minutes and get a 10 minute break</text>
+      <text>work for >60 minutes and get a 30 minute break</text>
+    </div>
+  
 
   <script>
     const { ipcRenderer } = require('electron');
 
-    function requestActiveApps() {
-      if (running) {
-        ipcRenderer.send('check-background-apps', interval, timeCounter, maxTime);
+    function clickButton() {
+      if (timeCounter >= 3600) {
+        breakCounter = 1800;
+      } else if (timeCounter >= 2700) {
+        breakCounter = 600;
+      } else if (timeCounter >= 1200) {
+        breakCounter = 300;
+      } else {
+        document.getElementById('alert').innerHTML = "you have to work for 20 minutes for a break!";
       }
+    }
+    function requestActiveApps() {
+      ipcRenderer.send('check-background-apps');
     }
 
     ipcRenderer.on('app-list', (event, response) => {
       var apps = document.getElementById('apps');
       var item = document.createElement('li');
-      item.textContent = response[0] + "\t\t\t\t\t\t\t\t" + response[1] + "\t\t\t\t\t\t\t\t" + response[3];
+      if (response[3]) {
+        item.id = "apps-true";
+      } else {
+        item.id = "apps-false";
+      }
+      item.textContent = "\t" + response[1] + "\t";
       apps.appendChild(item);
     });
 
@@ -112,18 +149,29 @@
 
 
     setInterval(() => {
-      if (hasGame) {
-        timeCounter -= 1;
-        console.log(1);
-        if (timeCounter == 0) {
-          timeCounter = maxTime;
-          hasGame = false;
-          ipcRenderer.send('time-out');
-          running = false;
-        } 
+      if (!onBreak) {
+        if (!hasGame) {
+          timeCounter += 1;
+          document.getElementById('onTask').className = "text_on_task";
+          document.getElementById('onTask').innerHTML = "ON TASK";
+          document.getElementById('time').className = "text_on_task";
+          document.getElementById('alert').className = "text_on_task";
+          document.getElementById('alert').innerHTML = "";
+        } else {
+          ipcRenderer.send('restart');
+          document.getElementById('onTask').className = "text_not_on_task";
+          document.getElementById('onTask').innerHTML = "NOT ON TASK";
+          document.getElementById('time').className = "text_not_on_task";
+          document.getElementById('alert').className = "text_not_on_task";
+          document.getElementById('alert').innerHTML = "oi mate you better close that game >:(";
+        }
+        var timeElement = document.getElementById('time');
+        timeElement.innerHTML = secondsToMinutesAndSeconds(timeCounter) + " of working";
+      } else {
+        breakCounter -= 1;
+        timeElement.innerHTML = secondsToMinutesAndSeconds(timeCounter) + " of break";
+        document.getElementById('onTask').innerHTML = "BREAK";
       }
-      var timeElement = document.getElementById('time');
-      timeElement.innerHTML = secondsToMinutesAndSeconds(timeCounter) + "remaining";
     }, 1000);
     
     requestActiveApps();

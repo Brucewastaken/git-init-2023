@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>App Usage Monitor</title>
+  <script>
+    var interval = 60; //in seconds
+    var timeCounter = 30;
+    var maxTime = 30;
+    var hasGame = false;
+    var running = true;
+
+  </script>
+</head>
+<style>
+    h1{
+      font-family: Helvetica;  
+      font-size: 10vh;
+      color: white;
+      text-align: center;
+      outline:invert;
+      outline-color: #9e363a;
+      margin: 0;
+      background-color: #1dbab4;
+    }
+    h2{
+      font-family: Helvetica; 
+        color: blue; 
+        font-size: 50%; 
+        margin: 10;
+        text-align: center;
+    }
+    body{
+        background-color: #1c77ac;
+    }
+    #apps-true{
+        font-family: Helvetica; 
+        list-style-type: none;
+        color: #1fd655;
+        font-size: 40%;
+        margin: 0;
+    }
+
+    #apps-false{
+        font-family: Helvetica; 
+        list-style-type: none;
+        color: #d61f1f;
+        font-size: 40%;
+        margin: 0;
+    }
+
+    .settings{
+        font-size: 30%;
+        width: 33%;
+        float: right;
+        background-color: white;
+        outline: auto;
+        outline-color: aquamarine;
+        margin: 0;
+    }
+    .current_apps{
+        font-size: 30%;
+        width: 33%;
+        float: left;
+        margin: 0;
+    }
+    .main_text{
+        font-size: 10vh;
+        width: 33%; /* Set the width of the div */
+        margin: 0 auto; /* Center the div horizontally */
+        text-align: center; /* Center the div vertically */
+    }
+    #on_task{
+      color:#1fd655;
+    }
+
+    #not_on_task{
+      color:#d61f1f;
+    }
+
+</style>
+<body>
+  <h1>App Usage Monitor</h1>
+
+  <h2 id = "time"></h2>
+   
+
+    <div class = "current_apps">
+      <h2>Current apps</h2>
+
+      <ul id = "apps">
+      </ul></div>
+    
+    <div class = "main_text">
+      <text id="onTask">ON TASK</text>
+    </div>
+    
+
+    <div class="settings">
+        <label for="work_times">Choose a time:</label>
+            <select id = "select_settings">
+                <option value=10>10 minutes</option>
+                <option value=15>15 minutes</option>
+                <option value=20>20 minutes</option>
+                <option value=30>30 minutes</option>
+                <option value=45>45 minutes</option>
+                <option value=60>1 hour</option>
+            </select>
+    </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+
+    document.getElementById("select_settings").onchange = (event) => {
+      maxTime = timeCounter = event.target.value*60;
+    }
+
+    function requestActiveApps() {
+      if (running) {
+        ipcRenderer.send('check-background-apps');
+      }
+    }
+
+    ipcRenderer.on('app-list', (event, response) => {
+      var apps = document.getElementById('apps');
+      var item = document.createElement('li');
+      if (response[3]) {
+        item.id = "apps-true";
+      } else {
+        item.id = "apps-false";
+      }
+      item.textContent = "\t\t\t\t\t\t\t\t" + response[1] + "\t\t\t\t\t\t\t\t";
+      apps.appendChild(item);
+    });
+
+    ipcRenderer.on('clear-list', (event) => {
+      var apps = document.getElementById('apps');
+      apps.innerHTML = "";
+    });
+
+
+    ipcRenderer.on('current-stats', (event, game) => {
+      hasGame = game;
+    });
+
+
+    setInterval(() => {
+      if (hasGame) {
+        timeCounter -= 1;
+        console.log(1);
+        if (timeCounter == 0) {
+          timeCounter = maxTime;
+          hasGame = false;
+          ipcRenderer.send('time-out');
+          running = false;
+        } 
+      }
+      var timeElement = document.getElementById('time');
+      timeElement.innerHTML = secondsToMinutesAndSeconds(timeCounter) + " remaining";
+    }, 1000);
+    
+    requestActiveApps();
+    setInterval(() => {
+      requestActiveApps();
+    }, interval*1000);
+
+
+    function secondsToMinutesAndSeconds(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+  </script>
+</body>
+</html>
