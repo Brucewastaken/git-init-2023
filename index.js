@@ -1,8 +1,43 @@
 const electron = require('electron');
+const fs = require('fs');
 const { exec } = require('child_process');
 const createCsvParser = require('csv-parser');
 const { Readable } = require('stream');
-const { app, BrowserWindow, ipcMain, getFocusedWindow } = electron;
+const { arrayBuffer } = require('stream/consumers');
+const { app, BrowserWindow, ipcMain } = electron;
+
+
+var hiddenArray;
+var strictSystemArray;
+var gameArray;
+
+
+fs.readFile('hiddenArray.json', (error, data) => {
+    if (error) {
+        console.error(error);
+    } else {
+        systemArray = JSON.parse(data);
+        console.log(hiddenArray); 
+    }
+});
+
+fs.readFile('strictSystemArray.json', (error, data) => {
+    if (error) {
+        console.error(error);
+    } else {
+        strictSystemArray = JSON.parse(data);
+        console.log(strictSystemArray); 
+    }
+});
+
+fs.readFile('gameArray.json', (error, data) => {
+    if (error) {
+        console.error(error);
+    } else {
+        gameArray = JSON.parse(data);
+        console.log(gameArray); 
+    }
+});
 
 let mainWindow;
 
@@ -19,12 +54,12 @@ app.on('ready', () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 });
 
-ipcMain.on('request-app-list', (event) => {
+ipcMain.on('check-background-apps', (event, interval, timeCounter, maxTime) => {
     const parser = createCsvParser({
-        separator: ',',  // Specify the field separator
+        separator: ',', 
     });
 
-    exec('tasklist /v /fo csv /fi "status eq running" | findstr /i /v "N/A"', (error, stdout, stderr) => {
+    exec('tasklist /v /fo csv /fi "status eq running" | findstr /i /v "N/A"', (error, stdout, stderr) => { // tasklist /fo csv /fi "windowtitle ne N/A" /fi "status eq running"
         if (error) {
             console.error(`exec error: ${error}`);
             return;
@@ -34,39 +69,54 @@ ipcMain.on('request-app-list', (event) => {
         const stream = new Readable();
         stream.push(stdout);
         stream.push(null);
+
+        var hasGame = false;
         
         // Pipe the stream into the parser
+        event.sender.send('clear-list');
         stream.pipe(parser).on('data', (data) => {
             // Get the process name and window title
             const name = data['Image Name'];
             const title = data['Window Title'];
             const PID = data["PID"];
-    
-            console.log(name, title, PID);
-            event.sender.send('app-list', name, title, PID);
+            var allowed = true;
+            var log = true;
+
+            hiddenArray.forEach(keyword => {
+                if (title.toLowerCase().includes(keyword.toLowerCase())) {
+                    log = false;
+                }
+            });
+
+            gameArray.forEach(keyword => {
+                if (title.toLowerCase().includes(keyword.toLowerCase())) {
+                    hasGame = true;
+                    allowed = false;
+                }
+            })
+
+            strictSystemArray.forEach(keyword => {
+                if (name.toLowerCase() == keyword.toLowerCase()) {
+                    log = false;
+                }
+            });
+
+            if (log) {
+                event.sender.send('app-list', [name, title, PID, allowed]);
+            }
+            
         });
-    });
-});
-
-ipcMain.on('request-app-uptime', (event, appId) => {
-    getProcessUptime(appId, (uptime) => {
-        console.log(uptime);
-        event.sender.send('app-uptime', uptime, appId);
-      });
-      console.log(getFocusedWindow());
-});
-
-  
-function getProcessUptime(pid, callback) {
-    exec(`wmic path Win32_PerfFormattedData_PerfProc_Process where IDProcess=${pid} get ElapsedTime`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            return;
+        event.sender.send('current-stats', timeCounter);
+        if (hasGame) {
+            timeCounter = timeCounter + interval;
+            if (timeCounter > maxTime) {
+                event.sender.send('time-out');
+                mainWindow.focus();
+                mainWindow.show();
+            }
         }
-  
-        const lines = stdout.split('\n');
-        const uptime = lines[1];
-        callback(uptime);
+        console.log("scanned");
+
     });
-}
+});
 

@@ -3,56 +3,55 @@
 <head>
   <meta charset="utf-8">
   <title>App Usage Monitor</title>
+  <script>
+    var interval = 60; //in seconds
+    var timeCounter = 0;
+    var maxTime = 600;
+  </script>
 </head>
 <body>
   <h1>App Usage Monitor</h1>
 
-  <ul id = "apps"></ul>
+  <ul id = "apps">
+    <li>hi</li>
+  </ul>
 
 
 
   <script>
     const { ipcRenderer } = require('electron');
 
-    function requestAppList() {
-      // Request the list of running processes from the main process
-      ipcRenderer.send('request-app-list');
+    function requestActiveApps() {
+      ipcRenderer.send('check-background-apps', interval, timeCounter, maxTime);
     }
 
-    function requestAppUptime(appId) {
-      // Request the uptime of the specified process from the main process
-      ipcRenderer.send('request-app-uptime', appId);
-    }
+    ipcRenderer.on('app-list', (event, response) => {
+      var apps = document.getElementById('apps');
+      var item = document.createElement('li');
+      item.textContent = response[0] + "\t\t\t\t\t\t\t\t" + response[1] + "\t\t\t\t\t\t\t\t" + response[3];
+      apps.appendChild(item);
+    });
 
-    ipcRenderer.on('app-list', (event, name, title, PID) => {
+    ipcRenderer.on('clear-list', (event) => {
+      var apps = document.getElementById('apps');
+      apps.innerHTML = "";
+    });
+
+    ipcRenderer.on('time-out', (event) => {
       
     });
 
-    ipcRenderer.on('app-uptime', (event, uptime, appID) => {
-      // Update the uptime of the selected app
-      const table = document.getElementById('app-list');
-      const rows = table.getElementsByTagName('tr');
-
-      // Find the row that corresponds to the selected app
-      for (let i = 2; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        var cellIDExists = false;
-        try {
-            if (cells[1].innerText != undefined) {
-                cellIDExists = true;
-            }
-        } catch {
-            continue;
-        }
-        if (cellIDExists && cells[1].innerText === appID) {
-          cells[2].innerText = uptime;
-          break;
-        }
-      }
+    ipcRenderer.on('current-stats', (event, time) => {
+      timeCounter = time;
     });
 
-    // Request the initial list of apps
-    requestAppList();
+
+
+    
+    requestActiveApps();
+    setInterval(() => {
+      requestActiveApps();
+    }, interval*1000);
   </script>
 </body>
 </html>
